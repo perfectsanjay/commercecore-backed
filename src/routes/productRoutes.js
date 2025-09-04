@@ -8,14 +8,15 @@ import {
     deleteProduct
 
 } from '../controllers/productController.js'
+import isAdmin from '../middleware/isAdmin.js';
 
 const router = express.Router()
 
 router.get('/', getProducts)
 
 router.get('/:id', getProductsById)
-router.post('/', auth,createNewProduct)
-router.put('/:id', auth,updateProduct)
-router.delete('/:id', auth, deleteProduct)
+router.post('/', auth ,isAdmin, createNewProduct)
+router.put('/:id', auth, isAdmin, updateProduct)
+router.delete('/:id', auth ,isAdmin, deleteProduct)
 
 export default router;
