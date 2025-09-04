@@ -4,6 +4,7 @@ import {
   getMyOrders,
   getAllOrders,
   updateOrderToDelivered,
+  payOrder
 } from "../controllers/orderController.js";
 import auth from "../middleware/auth.js";
 
@@ -28,5 +29,8 @@ router.get("/", auth, admin, getAllOrders);
 
 // Admin: Mark order as delivered
 router.put("/:id/deliver", auth, admin, updateOrderToDelivered);
+
+// payment routed
+router.post("/:id/pay",auth,payOrder)
 
 export default router;

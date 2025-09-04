@@ -1,4 +1,5 @@
 import Order from "../models/order.js";
+import stripe from "../../utils/stripe.js";
 
 // Create order
 export const createOrder = async (req, res, next) => {
@@ -65,3 +66,31 @@ export const updateOrderToDelivered = async (req, res, next) => {
     next(err);
   }
 };
+
+// Pay for an order (Stripe integration)
+export const payOrder = async (req, res, next) => {
+    try {
+      const order = await Order.findById(req.params.id);
+  
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+  
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: Math.round(order.totalPrice * 100), // Stripe expects amount in cents/paise
+        currency: "inr",
+        payment_method_types: ["card"],
+        metadata: {
+          orderId: order._id.toString(),
+          userId: order.user.toString(),
+        },
+      });
+  
+      res.json({
+        clientSecret: paymentIntent.client_secret,
+        orderId: order._id,
+      });
+    } catch (err) {
+      next(err);
+    }
+  };
